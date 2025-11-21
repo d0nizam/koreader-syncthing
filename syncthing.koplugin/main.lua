@@ -273,6 +273,12 @@ function Syncthing:apiCall(api_path, method, source)
 end
 
 function Syncthing:getStatusMenu()
+    if not self:isRunning() then
+        return {
+            { text = _("Syncthing is not running"), enabled_func = function() return false end }
+        }
+    end
+    
     local config = self:apiCall("config") or {}
     local connections = self:apiCall("system/connections") or {}
     local device_stats = self:apiCall("stats/device") or {}
@@ -376,6 +382,12 @@ function Syncthing:getStatusMenu()
 end
 
 function Syncthing:getPendingMenu()
+    if not self:isRunning() then
+        return {
+            { text = _("Syncthing is not running"), enabled_func = function() return false end }
+        }
+    end
+    
     local devices = self:apiCall("cluster/pending/devices") or {}
     local folders = self:apiCall("cluster/pending/folders") or {}
 
