@@ -509,6 +509,7 @@ function Syncthing:addToMainMenu(menu_items)
         sub_item_table = {
             {
                 text = _("Syncthing"),
+                sorting_hint = "tools",
                 keep_menu_open = true,
                 checked_func = function() return self:isRunning() end,
                 callback = function(touchmenu_instance)
