@@ -4,6 +4,7 @@ set -e
 # Save config and data under the KOReader runtime directory
 config_dir=settings/syncthing
 syncthing=plugins/syncthing.koplugin/syncthing
+cacert=plugins/syncthing.koplugin/cacert.pem
 pid_file=/tmp/syncthing_koreader.pid
 
 if [ -n "$1" ]; then
@@ -11,7 +12,6 @@ if [ -n "$1" ]; then
 else
     home_dir=/
 fi
-
 
 if [ -n "$2" ]; then
     port=$2
@@ -26,7 +26,7 @@ fi
 if [ ! -f "$config_dir/config.xml" ] || [ -n "$password" ]; then
     echo "Generating Syncthing configuration..."
     # Set HOME so that the default folder is created at $home_dir/Sync
-    HOME=$home_dir "$syncthing" generate \
+ HOME=$home_dir SSL_CERT_FILE="$cacert" "$syncthing" generate \
         --data="$config_dir" \
         --config="$config_dir" \
         --gui-user=syncthing \
@@ -35,12 +35,12 @@ if [ ! -f "$config_dir/config.xml" ] || [ -n "$password" ]; then
 fi
 
 # Save the device ID to a file for easy access from KOReader
-"$syncthing" device-id \
+SSL_CERT_FILE="$cacert" "$syncthing" device-id \
     --config="$config_dir" \
     --data="$config_dir" > "$config_dir/device-id"
 
 # We need to listen to 0.0.0.0 so that the GUI is accessible over the network
-"$syncthing" serve \
+SSL_CERT_FILE="$cacert" "$syncthing" serve \
     --config="$config_dir" \
     --data="$config_dir" \
     --gui-address=http://0.0.0.0:$port \
