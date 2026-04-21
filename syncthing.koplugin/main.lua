@@ -139,13 +139,15 @@ function Syncthing:stop()
 end
 
 function Syncthing:onToggleSyncthingServer(callback)
+    local safe_callback = type(callback) == "function" and callback or function() end
+
     if self:isRunning() then
         self:stop()
-        callback()
+        safe_callback()
     else
         NetworkMgr:runWhenOnline(function()
             self:start()
-            callback()
+            safe_callback()
         end)
     end
 end
